@@ -1,225 +1,288 @@
 #include <iostream>
+#include <iomanip>
+#include <cmath>
 
 using namespace std;
 
-float determinant(float matrix[100][100], int n);
+const int MAX_SIZE = 100;
+
+void inputMatrix(float m[MAX_SIZE][MAX_SIZE], int& rows, int& cols, int matrixIndex);
+
+void displayMatrix(float m[MAX_SIZE][MAX_SIZE], int rows, int cols);
+
+void displaySideBySide(float m1[MAX_SIZE][MAX_SIZE], int r1, int c1, float m2[MAX_SIZE][MAX_SIZE], int r2, int c2);
+
+void multiplyMatrices(float m1[MAX_SIZE][MAX_SIZE], int r1, int c1, float m2[MAX_SIZE][MAX_SIZE], int r2, int c2, float result[MAX_SIZE][MAX_SIZE], int& r3, int& c3);
+
+void addMatrices(float m1[MAX_SIZE][MAX_SIZE], int r1, int c1, float m2[MAX_SIZE][MAX_SIZE], int r2, int c2, float result[MAX_SIZE][MAX_SIZE]);
+
+void subtractMatrices(float m1[MAX_SIZE][MAX_SIZE], int r1, int c1, float m2[MAX_SIZE][MAX_SIZE], int r2, int c2, float result[MAX_SIZE][MAX_SIZE]);
+
+float determinant(float m[MAX_SIZE][MAX_SIZE], int n);
+
+void sortMatrix(float m[MAX_SIZE][MAX_SIZE], int rows, int cols);
+
+void mySwap(float& a, float& b);
 
 int main()
 {
-    int a;
-    cout << "Enter rows of first matrix:";
-    cin >> a;
-    const int row1 = a;
-    cout << "Enter col of first matrix:";
-    cin >> a;
-    const int col1 = a;
-    cout << "Enter rows of second matrix:";
-    cin >> a;
-    const int row2 = a;
-    cout << "Enter col of second matrix:";
-    cin >> a;
-    const int col2 = a;
+    float m1[MAX_SIZE][MAX_SIZE], m2[MAX_SIZE][MAX_SIZE];
+    int r1, c1, r2, c2;
 
-    float matrix1[row1][col1];
-    float matrix2[row2][col2];
+    inputMatrix(m1, r1, c1, 1);
+    inputMatrix(m2, r2, c2, 2);
 
-    // Input
+    cout << "--- Matrices Side by Side ---\n";
+    displaySideBySide(m1, r1, c1, m2, r2, c2);
 
-    for (int i = 0; i < row1; i++)
+    cout << "--- Product of Matrices ---\n";
+    if (c1 == r2)
     {
-        for (int j = 0; j < col1; j++)
-        {
-            cout << "Enter matrix1[" << i << "][" << j << "]:";
-            cin >> matrix1[i][j];
-        }
+        float product[MAX_SIZE][MAX_SIZE];
+        int r3, c3;
+        multiplyMatrices(m1, r1, c1, m2, r2, c2, product, r3, c3);
+        displayMatrix(product, r3, c3);
     }
-    for (int i = 0; i < row2; i++)
-    {
-        for (int j = 0; j < col2; j++)
-        {
-            cout << "Enter matrix2[" << i << "][" << j << "]:";
-            cin >> matrix2[i][j];
-        }
-    }
-
-    cout << '\n';
-
-    // Display
-    int biggerrow = (row1 > row2) ? row1 : row2;
-    for (int i = 0; i < biggerrow; i++)
-    {
-        if (i < row1)
-        {
-            for (int j = 0; j < col1; j++)
-            {
-                cout << matrix1[i][j] << " ";
-            }
-        }
-        cout << "\t";
-        if (i < row2)
-        {
-            for (int j = 0; j < col2; j++)
-            {
-                cout << matrix2[i][j] << " ";
-            }
-        }
-        cout << "\n";
-    }
-
-    // Product
-    if (col1 != row2)
+    else
     {
         cout << "Product of Matrices is not defined" << endl;
     }
-    else
+
+    cout << "--- Addition ---\n";
+    if (r1 == r2 && c1 == c2)
     {
-        const int row3 = row1;
-        const int col3 = col2;
-        float matrix3[row3][col3];
-
-        for (int i = 0; i < row3; i++)
-        {
-            for (int j = 0; j < col3; j++)
-            {
-                matrix3[i][j] = 0;
-            }
-        }
-
-        for (int i = 0; i < row3; i++)
-        {
-            for (int j = 0; j < col3; j++)
-            {
-                for (int k = 0; k < col1; k++)
-                {
-                    matrix3[i][j] += matrix1[i][k] * matrix2[k][j];
-                }
-            }
-        }
-
-        cout << '\n';
-
-        cout << "Result" << endl;
-
-        for (int i = 0; i < row3; i++)
-        {
-            for (int j = 0; j < col3; j++)
-            {
-                cout << matrix3[i][j] << " ";
-            }
-            cout << '\n';
-        }
-    }
-
-    // Addition & Subtraction
-
-    if (row1 != row2 && col1 != col2)
-    {
-        cout << "Addition and Subtraction can not be performed" << endl;
+        float sum[MAX_SIZE][MAX_SIZE];
+        addMatrices(m1, r1, c1, m2, r2, c2, sum);
+        displayMatrix(sum, r1, c1);
     }
     else
     {
-        const int row4 = row1;
-        const int col4 = col1;
-        float addition[row4][col4];
-        float subtraction[row4][col4];
-
-        for (int i = 0; i < row4; i++)
-        {
-            for (int j = 0; j < col4; j++)
-            {
-                addition[i][j] = matrix1[i][j] + matrix2[i][j];
-                subtraction[i][j] = matrix1[i][j] - matrix2[i][j];
-            }
-        }
-        cout << '\n';
-
-        cout << "Addition:\n";
-
-        for (int i = 0; i < row4; i++)
-        {
-            for (int j = 0; j < col4; j++)
-            {
-                cout << addition[i][j] << " ";
-            }
-            cout << '\n';
-        }
-        cout << '\n';
-
-        cout << "Subtraction\n";
-
-        for (int i = 0; i < row4; i++)
-        {
-            for (int j = 0; j < col4; j++)
-            {
-                cout << subtraction[i][j] << " ";
-            }
-            cout << '\n';
-        }
+        cout << "Addition can not be performed" << endl;
     }
 
-    // Determinant
-
-    cout << "Enter rows of first matrix:";
-    cin >> a;
-    const int row = a;
-    cout << "Enter col of first matrix:";
-    cin >> a;
-    const int col = a;
-
-    if (row != col)
+    cout << "--- Difference ---\n";
+    if (r1 == r2 && c1 == c2)
     {
-        cout << "Determinant can't be found\n";
+        float diff[MAX_SIZE][MAX_SIZE];
+        subtractMatrices(m1, r1, c1, m2, r2, c2, diff);
+        displayMatrix(diff, r1, c1);
     }
     else
     {
-        float determatrix[100][100]; // 2D array to hold square matrix
-        cout << "Enter elements of the matrix row by row:\n";
-        for (int i = 0; i < row; i++)
+        cout << "Subtraction can not be performed" << endl;
+    }
+
+    cout << "--- Determinant of Matrix 1 ---\n";
+    if (r1 == c1)
+    {
+        // Make a copy because determinant function might modify it (Gaussian elimination)
+        float temp[MAX_SIZE][MAX_SIZE];
+        for(int i=0; i<r1; i++) for(int j=0; j<c1; j++) temp[i][j] = m1[i][j];
+        cout << "Determinant: " << determinant(temp, r1) << endl;
+    }
+    else
+    {
+        cout << "Determinant can't be found (Not square)\n";
+    }
+
+    cout << "--- Determinant of Matrix 2 ---\n";
+    if (r2 == c2)
+    {
+        float temp[MAX_SIZE][MAX_SIZE];
+        for(int i=0; i<r2; i++) for(int j=0; j<c2; j++) temp[i][j] = m2[i][j];
+        cout << "Determinant: " << determinant(temp, r2) << endl;
+    }
+    else
+    {
+        cout << "Determinant can't be found (Not square)\n";
+    }
+
+    cout << "--- Sorted Matrix 1 ---\n";
+    float m1_sorted[MAX_SIZE][MAX_SIZE];
+    for(int i=0; i<r1; i++) for(int j=0; j<c1; j++) m1_sorted[i][j] = m1[i][j];
+    sortMatrix(m1_sorted, r1, c1);
+    displayMatrix(m1_sorted, r1, c1);
+
+    cout << "--- Sorted Matrix 2 ---\n";
+    float m2_sorted[MAX_SIZE][MAX_SIZE];
+    for(int i=0; i<r2; i++) for(int j=0; j<c2; j++) m2_sorted[i][j] = m2[i][j];
+    sortMatrix(m2_sorted, r2, c2);
+    displayMatrix(m2_sorted, r2, c2);
+
+    return 0;
+}
+
+void mySwap(float& a, float& b)
+{
+    float temp = a;
+    a = b;
+    b = temp;
+}
+
+void inputMatrix(float m[MAX_SIZE][MAX_SIZE], int& rows, int& cols, int matrixIndex)
+{
+    cout << "Enter rows of matrix " << matrixIndex << ": ";
+    cin >> rows;
+    cout << "Enter col of matrix " << matrixIndex << ": ";
+    cin >> cols;
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
         {
-            for (int j = 0; j < col; j++)
-            {
-                cout << "Enter element [" << i << "][" << j << "]: ";
-                cin >> determatrix[i][j];
-            }
+            cout << "Enter matrix" << matrixIndex << "[" << i << "][" << j << "]:";
+            cin >> m[i][j];
         }
-        int n = row; // size of square matrix
-        cout << "Determinant: " << determinant(determatrix, n) << endl;
     }
 }
 
-float determinant(float matrix[100][100], int n) {
-    float temp[100][100];
-    for(int i=0;i<n;i++)
-        for(int j=0;j<n;j++)
-            temp[i][j] = matrix[i][j];
+void displayMatrix(float m[MAX_SIZE][MAX_SIZE], int rows, int cols)
+{
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            cout << m[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
 
-    float det = 1;
+void displaySideBySide(float m1[MAX_SIZE][MAX_SIZE], int r1, int c1, float m2[MAX_SIZE][MAX_SIZE], int r2, int c2)
+{
+    int maxRows = (r1 > r2) ? r1 : r2;
 
-    for(int i=0;i<n;i++){
-        // Pivoting
-        if(temp[i][i] == 0){
-            int swapRow = -1;
-            for(int k=i+1;k<n;k++){
-                if(temp[k][i] != 0){
-                    swapRow = k;
-                    break;
-                }
+    for (int i = 0; i < maxRows; i++)
+    {
+        if (i < r1)
+        {
+            for (int j = 0; j < c1; j++)
+            {
+                cout << m1[i][j] << " ";
             }
-            if(swapRow == -1) return 0; // determinant is zero
-            for(int j=0;j<n;j++) swap(temp[i][j], temp[swapRow][j]);
-            det *= -1; // swap changes sign
+        }
+        else
+        {
+            for (int j = 0; j < c1; j++) cout << "  ";
         }
 
-        det *= temp[i][i];
+        cout << "\t";
 
-        // Eliminate below
-        for(int k=i+1;k<n;k++){
-            float factor = temp[k][i]/temp[i][i];
-            for(int j=i;j<n;j++){
-                temp[k][j] -= factor*temp[i][j];
+        if (i < r2)
+        {
+            for (int j = 0; j < c2; j++)
+            {
+                cout << m2[i][j] << " ";
+            }
+        }
+        cout << endl;
+    }
+}
+
+void multiplyMatrices(float m1[MAX_SIZE][MAX_SIZE], int r1, int c1, float m2[MAX_SIZE][MAX_SIZE], int r2, int c2, float result[MAX_SIZE][MAX_SIZE], int& r3, int& c3)
+{
+    r3 = r1;
+    c3 = c2;
+    
+    for (int i = 0; i < r3; i++)
+    {
+        for (int j = 0; j < c3; j++)
+        {
+            result[i][j] = 0;
+            for (int k = 0; k < c1; k++)
+            {
+                result[i][j] += m1[i][k] * m2[k][j];
             }
         }
     }
+}
 
+void addMatrices(float m1[MAX_SIZE][MAX_SIZE], int r1, int c1, float m2[MAX_SIZE][MAX_SIZE], int r2, int c2, float result[MAX_SIZE][MAX_SIZE])
+{
+    for (int i = 0; i < r1; i++)
+    {
+        for (int j = 0; j < c1; j++)
+        {
+            result[i][j] = m1[i][j] + m2[i][j];
+        }
+    }
+}
+
+void subtractMatrices(float m1[MAX_SIZE][MAX_SIZE], int r1, int c1, float m2[MAX_SIZE][MAX_SIZE], int r2, int c2, float result[MAX_SIZE][MAX_SIZE])
+{
+    for (int i = 0; i < r1; i++)
+    {
+        for (int j = 0; j < c1; j++)
+        {
+            result[i][j] = m1[i][j] - m2[i][j];
+        }
+    }
+}
+
+float determinant(float m[MAX_SIZE][MAX_SIZE], int n)
+{
+    
+    float det = 1;
+    for (int i = 0; i < n; i++)
+    {
+        int pivot = i;
+        while (pivot < n && m[pivot][i] == 0) pivot++;
+        
+        if (pivot == n) return 0;
+        
+        if (pivot != i)
+        {
+            for(int k=0; k<n; k++) mySwap(m[i][k], m[pivot][k]);
+            det *= -1;
+        }
+        
+        det *= m[i][i];
+        
+        for (int j = i + 1; j < n; j++)
+        {
+            if (m[j][i] != 0)
+            {
+                float factor = m[j][i] / m[i][i];
+                for (int k = i; k < n; k++)
+                {
+                    m[j][k] -= factor * m[i][k];
+                }
+            }
+        }
+    }
     return det;
+}
+
+void sortMatrix(float m[MAX_SIZE][MAX_SIZE], int rows, int cols)
+{
+    float temp[MAX_SIZE * MAX_SIZE];
+    int k = 0;
+    
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            temp[k++] = m[i][j];
+        }
+    }
+    
+    for (int i = 0; i < k - 1; i++)
+    {
+        for (int j = 0; j < k - i - 1; j++)
+        {
+            if (temp[j] > temp[j + 1])
+            {
+                mySwap(temp[j], temp[j + 1]);
+            }
+        }
+    }
+    
+    k = 0;
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            m[i][j] = temp[k++];
+        }
+    }
 }
